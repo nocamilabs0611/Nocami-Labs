@@ -1,23 +1,29 @@
-import Hero from './components/Hero'
-import Services from './components/Services'
-import TechStack from './components/TechStack'
-import Contact from './components/Contact'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Services from './pages/Services';
+import Projects from './pages/Projects';
+import Contact from './pages/Contact';
 
 function App() {
   return (
-    <div className="bg-dark-900 min-h-screen text-white font-sans selection:bg-accent-blue/30">
-      <main>
-        <Hero />
-        <Services />
-        <TechStack />
-        <Contact />
-      </main>
-      
-      <footer className="py-8 border-t border-gray-800 bg-dark-900 text-center text-gray-500 text-sm relative z-10">
-        <p>&copy; {new Date().getFullYear()} Nocami Labs. All rights reserved.</p>
-      </footer>
-    </div>
-  )
+    <Router>
+      <div className="flex flex-col min-h-screen font-sans text-slate-600 bg-gray-50">
+        <Header />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
