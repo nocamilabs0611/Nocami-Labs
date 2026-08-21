@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Code2, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Header = () => {
@@ -10,13 +10,12 @@ const Header = () => {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="container mx-auto px-5 py-4 flex justify-between items-center">
         <Link to="/" onClick={closeMenu} className="flex items-center gap-2 text-2xl font-bold text-slate-900 z-50">
-          <Code2 className="text-red-600" size={32} />
-          <span>Nocami Labs</span>
+          <img src="/logo.png" alt="Nocami Labs" style={{ height: '60px', width: 'auto', objectFit: 'contain', mixBlendMode: 'multiply' }} />
         </Link>
-        
+
         {/* Desktop Nav */}
         <nav className="hidden md:flex gap-8 items-center font-medium">
           <Link to="/" className="hover:text-red-600 transition-colors">Home</Link>

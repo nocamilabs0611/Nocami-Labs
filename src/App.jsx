@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
 import PageTransition from './components/PageTransition';
+import LoadingScreen from './components/LoadingScreen';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -29,15 +30,38 @@ function AnimatedRoutes() {
 }
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <Router>
-      <div className="flex flex-col min-h-screen font-sans text-slate-600 bg-gray-50">
-        <Header />
-        <main className="flex-grow overflow-hidden">
-          <AnimatedRoutes />
-        </main>
-        <Footer />
-      </div>
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div key="loading" exit={{ opacity: 0, transition: { duration: 0.5 } }}>
+            <LoadingScreen />
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col min-h-screen font-sans text-slate-600 bg-gray-50"
+          >
+            <Header />
+            <main className="flex-grow overflow-hidden">
+              <AnimatedRoutes />
+            </main>
+            <Footer />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Router>
   );
 }

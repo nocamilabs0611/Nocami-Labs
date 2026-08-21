@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Globe, Smartphone, Code2, PenTool } from 'lucide-react';
+import { Globe, Smartphone, Code2, Briefcase } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 
 const Services = () => {
@@ -21,46 +21,46 @@ const Services = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-          {/* Full-Stack Web Development */}
+          {/* Custom Software Development */}
           <FadeIn delay={0.1}>
             <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow h-full">
-              <Globe className="text-red-600 mb-6" size={48} />
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Full-Stack Web Development</h2>
+              <Code2 className="text-red-600 mb-6" size={48} />
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">Custom Software Development</h2>
               <p className="text-slate-600 leading-relaxed">
-                Highlighting our expertise in building responsive, scalable web applications using React.js and Node.js. We focus on incredibly fast load times and creating seamless user experiences.
+                We design robust backend architectures, seamless API integrations, and build highly secure, scalable software from scratch to fit your unique business needs.
               </p>
             </div>
           </FadeIn>
 
-          {/* Mobile Application Development */}
+          {/* Web Application Development */}
           <FadeIn delay={0.3}>
             <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow h-full">
+              <Globe className="text-red-600 mb-6" size={48} />
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">Web Application Development</h2>
+              <p className="text-slate-600 leading-relaxed">
+                Highlighting our expertise in building responsive, scalable web applications. We focus on incredibly fast load times and creating seamless user experiences.
+              </p>
+            </div>
+          </FadeIn>
+
+          {/* Mobile App Development */}
+          <FadeIn delay={0.5}>
+            <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow h-full">
               <Smartphone className="text-red-600 mb-6" size={48} />
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Mobile Application Development</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">Mobile App Development</h2>
               <p className="text-slate-600 leading-relaxed">
                 Focused on delivering high-performance, cross-platform mobile solutions tailored for both iOS and Android environments to help you reach your users anywhere.
               </p>
             </div>
           </FadeIn>
 
-          {/* Custom Software Solutions */}
-          <FadeIn delay={0.5}>
-            <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow h-full">
-              <Code2 className="text-red-600 mb-6" size={48} />
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Custom Software Solutions</h2>
-              <p className="text-slate-600 leading-relaxed">
-                We design robust backend architectures, seamless API integrations, and build highly secure, scalable enterprise software from scratch to fit your unique business needs.
-              </p>
-            </div>
-          </FadeIn>
-
-          {/* UI/UX Design */}
+          {/* Enterprise Software Development */}
           <FadeIn delay={0.7}>
             <div className="bg-white p-8 rounded-xl border border-gray-200 hover:shadow-lg transition-shadow h-full">
-              <PenTool className="text-red-600 mb-6" size={48} />
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">UI/UX Design</h2>
+              <Briefcase className="text-red-600 mb-6" size={48} />
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">Enterprise Software Development</h2>
               <p className="text-slate-600 leading-relaxed">
-                Emphasizing the creation of intuitive, modern, and user-centric interfaces. We craft experiences that drive meaningful user engagement and maximize conversion rates.
+                Empowering large-scale organizations with comprehensive digital solutions. We build secure, reliable, and integrated platforms to optimize your business operations.
               </p>
             </div>
           </FadeIn>
