@@ -8,13 +8,24 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['logo.png'], // Look for your existing logo
       manifest: {
         name: 'Nocami Labs',
         short_name: 'Nocami',
         description: 'Nocami Labs application',
         theme_color: '#ffffff',
-        icons: []
+        icons: [
+          {
+            src: 'logo.png', // Use logo.png instead of missing files
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'logo.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
       }
     })
   ],
