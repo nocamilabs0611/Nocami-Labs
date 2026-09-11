@@ -14,6 +14,7 @@ const Footer = () => {
           <p>Phone: +91 4366353547</p>
           <a href="https://nocamilabs.duckdns.org"><p>Web: https://nocamilabs.duckdns.org</p></a>
         </div>
+        
         <div>
           <h3 className="text-xl font-bold text-white mb-4">Services</h3>
           <p>Custom Software Development</p>

@@ -29,7 +29,6 @@ const Header = () => {
           {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
-
       {/* Mobile Nav */}
       <AnimatePresence>
         {isMenuOpen && (

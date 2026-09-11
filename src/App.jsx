@@ -54,6 +54,7 @@ function App() {
             transition={{ duration: 0.5 }}
             className="flex flex-col min-h-screen font-sans text-slate-600 bg-gray-50"
           >
+            
             <Header />
             <main className="flex-grow overflow-hidden">
               <AnimatedRoutes />
