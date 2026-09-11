@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import Services from './pages/Services';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
-import ProjectEstimation from './pages/ProjectEstimation';
 import PageTransition from './components/PageTransition';
 import LoadingScreen from './components/LoadingScreen';
 
@@ -25,7 +24,6 @@ function AnimatedRoutes() {
         <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
         <Route path="/projects" element={<PageTransition><Projects /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-        <Route path="/estimate" element={<PageTransition><ProjectEstimation /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );

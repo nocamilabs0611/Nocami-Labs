@@ -21,7 +21,6 @@ const Header = () => {
           <Link to="/" className="hover:text-red-600 transition-colors">Home</Link>
           <Link to="/services" className="hover:text-red-600 transition-colors">Services</Link>
           <Link to="/projects" className="hover:text-red-600 transition-colors">Projects</Link>
-          <Link to="/estimate" className="hover:text-red-600 transition-colors">Project Estimation</Link>
           <Link to="/contact" className="hover:text-red-600 transition-colors">Contact</Link>
         </nav>
 
@@ -44,7 +43,6 @@ const Header = () => {
               <Link to="/" onClick={closeMenu} className="hover:text-red-600 transition-colors py-2 border-b border-gray-50">Home</Link>
               <Link to="/services" onClick={closeMenu} className="hover:text-red-600 transition-colors py-2 border-b border-gray-50">Services</Link>
               <Link to="/projects" onClick={closeMenu} className="hover:text-red-600 transition-colors py-2 border-b border-gray-50">Projects</Link>
-              <Link to="/estimate" onClick={closeMenu} className="hover:text-red-600 transition-colors py-2 border-b border-gray-50">Project Estimation</Link>
               <Link to="/contact" onClick={closeMenu} className="hover:text-red-600 transition-colors py-2">Contact</Link>
             </nav>
           </motion.div>
