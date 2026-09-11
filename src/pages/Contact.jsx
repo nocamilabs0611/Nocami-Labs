@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { Send } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 
@@ -7,24 +6,31 @@ const Contact = () => {
   const form = useRef();
   const [status, setStatus] = useState({ message: '', type: '' });
 
-  const sendEmail = (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
     setStatus({ message: 'Sending message...', type: 'loading' });
 
-    emailjs.sendForm(
-      import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-      form.current,
-      {
-        publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      }
-    )
-      .then(() => {
+    const formData = new FormData(form.current);
+    formData.append('access_key', 'ac09c398-906a-47fa-8093-4ed6a26819d7');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
         setStatus({ message: 'Message sent successfully! We will be in touch shortly.', type: 'success' });
         form.current.reset();
-      }, () => {
+      } else {
+        console.error('Web3Forms error:', data);
         setStatus({ message: 'Failed to send message. Please try again.', type: 'error' });
-      });
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setStatus({ message: 'Failed to send message. Please try again.', type: 'error' });
+    }
   };
 
   return (
