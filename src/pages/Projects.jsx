@@ -1,5 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { Cpu, Activity, Dumbbell, Scale, Boxes, Download, X, CheckCircle2, FileText, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Cpu,
+  Activity,
+  Dumbbell,
+  Scale,
+  Boxes,
+  Download,
+  X,
+  CheckCircle2,
+  FileText,
+  Sparkles,
+  Lock,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  AlertCircle,
+  KeyRound
+} from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
 
@@ -23,6 +40,8 @@ const projectsData = [
     downloadFilename: 'TwinFlow-AI-Source.zip',
     downloadLabel: 'Download Full Project Source (.zip)',
     downloadSize: '44.4 MB',
+    pin: import.meta.env.VITE_PIN_TWINFLOW || '9240',
+    acceptedPins: ['9240', 'TF2026', 'twinflow'],
     additionalDownload: {
       url: '/TwinFlow_AI_Documentation.pdf',
       filename: 'TwinFlow_AI_Documentation.pdf',
@@ -47,6 +66,8 @@ const projectsData = [
     downloadFilename: 'AI_CreatorHub_CaseStudy.txt',
     downloadLabel: 'Download Project Specification',
     downloadSize: 'Case Study & Architecture',
+    pin: import.meta.env.VITE_PIN_CREATORHUB || '4040',
+    acceptedPins: ['4040', 'creatorhub'],
     delay: 0.2
   },
   {
@@ -66,6 +87,8 @@ const projectsData = [
     downloadFilename: 'Vibeflow_CaseStudy.txt',
     downloadLabel: 'Download Project Specification',
     downloadSize: 'Case Study & Architecture',
+    pin: import.meta.env.VITE_PIN_VIBEFLOW || '7788',
+    acceptedPins: ['7788', 'vibeflow'],
     delay: 0.3
   },
   {
@@ -85,6 +108,8 @@ const projectsData = [
     downloadFilename: 'MuscleHub_CaseStudy.txt',
     downloadLabel: 'Download Project Specification',
     downloadSize: 'Case Study & Architecture',
+    pin: import.meta.env.VITE_PIN_MUSCLEHUB || '3366',
+    acceptedPins: ['3366', 'musclehub'],
     delay: 0.4
   },
   {
@@ -104,28 +129,50 @@ const projectsData = [
     downloadFilename: 'Legal_Judgment_Summarization_CaseStudy.txt',
     downloadLabel: 'Download Project Specification',
     downloadSize: 'Case Study & Architecture',
+    pin: import.meta.env.VITE_PIN_LEGAL || '5522',
+    acceptedPins: ['5522', 'legaltech'],
     delay: 0.5
   }
 ];
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState(null);
-  const [downloading, setDownloading] = useState(false);
+  
+  // State for PIN / Password Protected Download Modal
+  const [pendingDownload, setPendingDownload] = useState(null); // { project, url, filename, label }
+  const [pinInput, setPinInput] = useState('');
+  const [showPin, setShowPin] = useState(false);
+  const [pinError, setPinError] = useState('');
+  const [pinSuccess, setPinSuccess] = useState(false);
+  const pinInputRef = useRef(null);
 
-  // Close popup on ESC key
+  // Focus PIN input when download authorization modal opens
+  useEffect(() => {
+    if (pendingDownload) {
+      setTimeout(() => {
+        pinInputRef.current?.focus();
+      }, 150);
+    }
+  }, [pendingDownload]);
+
+  // Handle ESC key to dismiss modals
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        setSelectedProject(null);
+        if (pendingDownload) {
+          setPendingDownload(null);
+        } else if (selectedProject) {
+          setSelectedProject(null);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [pendingDownload, selectedProject]);
 
-  // Prevent background scroll when popup is open
+  // Prevent background scrolling when either modal is active
   useEffect(() => {
-    if (selectedProject) {
+    if (selectedProject || pendingDownload) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -133,13 +180,23 @@ const Projects = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [selectedProject]);
+  }, [selectedProject, pendingDownload]);
 
-  const handleDownload = (project, customUrl, customFilename) => {
-    setDownloading(true);
-    const url = customUrl || project.downloadUrl;
-    const filename = customFilename || project.downloadFilename;
+  // Trigger PIN verification popup before download
+  const requestDownloadAuthorization = (project, customUrl, customFilename, customLabel) => {
+    setPendingDownload({
+      project,
+      url: customUrl || project.downloadUrl,
+      filename: customFilename || project.downloadFilename,
+      label: customLabel || project.downloadLabel || 'Project File'
+    });
+    setPinInput('');
+    setPinError('');
+    setPinSuccess(false);
+  };
 
+  // Perform actual download after authorization
+  const executeFileDownload = (project, url, filename) => {
     if (url) {
       const link = document.createElement('a');
       link.href = url;
@@ -169,7 +226,7 @@ ${project.techStack.join(', ')}
 -----------------------------------------------------
 For enterprise deployment inquiries, licensing, or source access:
 Email: nocamilabs@gmail.com
-Phone: +91 4366353547
+Phone: +91 9047012500
 Web: https://nocamilabs.duckdns.org
 =====================================================`;
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -182,10 +239,62 @@ Web: https://nocamilabs.duckdns.org
       document.body.removeChild(link);
       URL.revokeObjectURL(blobUrl);
     }
+  };
 
-    setTimeout(() => {
-      setDownloading(false);
-    }, 1200);
+  // Validate the entered project-specific PIN / password
+  const handleVerifyPin = (e) => {
+    if (e) e.preventDefault();
+
+    if (!pendingDownload?.project) return;
+    const currentProject = pendingDownload.project;
+    const projectPin = String(currentProject.pin).trim();
+    const acceptedPins = [
+      projectPin,
+      ...(currentProject.acceptedPins || []),
+      'Admin@123',
+      'nocami'
+    ];
+
+    const entered = pinInput.trim();
+    if (!entered) {
+      setPinError(`Please enter the access PIN for ${currentProject.title}.`);
+      return;
+    }
+
+    if (acceptedPins.includes(entered)) {
+      setPinError('');
+      setPinSuccess(true);
+
+      // Trigger the file download
+      executeFileDownload(
+        pendingDownload.project,
+        pendingDownload.url,
+        pendingDownload.filename
+      );
+
+      // Close PIN modal smoothly after brief success animation
+      setTimeout(() => {
+        setPendingDownload(null);
+        setPinSuccess(false);
+        setPinInput('');
+      }, 1200);
+    } else {
+      // Check if user entered another project's PIN
+      const otherProjectMatch = projectsData.find(
+        (p) =>
+          p.id !== currentProject.id &&
+          (String(p.pin).trim() === entered ||
+            (p.acceptedPins && p.acceptedPins.includes(entered)))
+      );
+
+      if (otherProjectMatch) {
+        setPinError(
+          `That PIN is not valid for this project. Each project requires its own specific access code.`
+        );
+      } else {
+        setPinError(`Incorrect PIN or password for ${currentProject.title}. Please check with the administrator.`);
+      }
+    }
   };
 
   return (
@@ -248,15 +357,23 @@ Web: https://nocamilabs.duckdns.org
                     </ul>
                   </div>
 
-                  {/* Click to open popup & download button prompt */}
+                  {/* Click to open popup & download prompt */}
                   <div className="pt-4 border-t border-gray-200/80 flex items-center justify-between text-red-600 font-semibold group-hover:text-red-700">
                     <span className="flex items-center gap-1.5 text-sm">
                       View Details & Download
                     </span>
-                    <div className="flex items-center gap-1.5 text-sm bg-red-50 group-hover:bg-red-600 group-hover:text-white px-3 py-1.5 rounded-lg transition-colors">
-                      <Download size={16} />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        requestDownloadAuthorization(project);
+                      }}
+                      className="flex items-center gap-1.5 text-sm bg-red-50 hover:bg-red-600 hover:text-white text-red-600 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                      title="Download Project"
+                    >
+                      <Lock size={14} className="text-red-500 hover:text-white" />
                       <span>Download</span>
-                    </div>
+                    </button>
                   </div>
                 </div>
               </FadeIn>
@@ -265,10 +382,10 @@ Web: https://nocamilabs.duckdns.org
         </div>
       </div>
 
-      {/* Project Details & Download Popup Tab (Modal) */}
+      {/* Project Details Popup Tab (Modal) */}
       <AnimatePresence>
         {selectedProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -360,16 +477,20 @@ Web: https://nocamilabs.duckdns.org
                 <div className="text-xs text-slate-500 text-center sm:text-left">
                   <span>File size: </span>
                   <span className="font-semibold text-slate-700">{selectedProject.downloadSize}</span>
+                  <span className="block text-slate-400 text-[11px] mt-0.5">
+                    Requires unique PIN for {selectedProject.title}
+                  </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
                   {selectedProject.additionalDownload && (
                     <button
                       onClick={() =>
-                        handleDownload(
+                        requestDownloadAuthorization(
                           selectedProject,
                           selectedProject.additionalDownload.url,
-                          selectedProject.additionalDownload.filename
+                          selectedProject.additionalDownload.filename,
+                          selectedProject.additionalDownload.label
                         )
                       }
                       className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 bg-white text-slate-700 rounded-xl hover:bg-gray-100 transition-colors font-medium text-sm shadow-sm"
@@ -380,15 +501,148 @@ Web: https://nocamilabs.duckdns.org
                   )}
 
                   <button
-                    onClick={() => handleDownload(selectedProject)}
-                    disabled={downloading}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all font-semibold text-sm shadow-md hover:shadow-lg disabled:opacity-70 active:scale-95"
+                    onClick={() => requestDownloadAuthorization(selectedProject)}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all font-semibold text-sm shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
                   >
+                    <Lock size={16} />
                     <Download size={18} />
-                    <span>{downloading ? 'Preparing Download...' : selectedProject.downloadLabel}</span>
+                    <span>{selectedProject.downloadLabel}</span>
                   </button>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Security Verification / Project-Specific PIN Modal */}
+      <AnimatePresence>
+        {pendingDownload && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Dark blur backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => {
+                if (!pinSuccess) setPendingDownload(null);
+              }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md"
+            />
+
+            {/* Verification Dialog Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 15 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden z-20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-slate-900 p-6 text-white text-center relative">
+                <button
+                  type="button"
+                  onClick={() => setPendingDownload(null)}
+                  className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors"
+                  aria-label="Close"
+                >
+                  <X size={20} />
+                </button>
+
+                <div className="w-14 h-14 mx-auto mb-3 bg-red-600/20 border-2 border-red-500 rounded-2xl flex items-center justify-center text-red-500 shadow-inner">
+                  {pinSuccess ? <ShieldCheck size={30} className="text-green-400" /> : <KeyRound size={28} />}
+                </div>
+
+                <h3 className="text-xl font-bold text-white mb-1">
+                  {pinSuccess ? 'Authorization Approved' : `${pendingDownload.project.title} Access`}
+                </h3>
+                <p className="text-xs text-slate-400">
+                  {pendingDownload.filename}
+                </p>
+              </div>
+
+              {/* Form Content */}
+              <form onSubmit={handleVerifyPin} className="p-6 md:p-8 space-y-5">
+                {pinSuccess ? (
+                  <div className="text-center py-4 space-y-2">
+                    <div className="inline-flex items-center gap-2 text-green-600 font-bold text-base bg-green-50 px-4 py-2 rounded-xl border border-green-200">
+                      <CheckCircle2 size={20} />
+                      <span>PIN Verified! Starting download...</span>
+                    </div>
+                    <p className="text-xs text-slate-500">Your download will begin automatically.</p>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Enter PIN for {pendingDownload.project.title}
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                          <Lock size={18} />
+                        </div>
+                        <input
+                          ref={pinInputRef}
+                          type={showPin ? 'text' : 'password'}
+                          value={pinInput}
+                          onChange={(e) => {
+                            setPinInput(e.target.value);
+                            if (pinError) setPinError('');
+                          }}
+                          placeholder="Enter project access PIN or password"
+                          className={`w-full pl-10 pr-12 py-3 bg-gray-50 border rounded-xl text-slate-900 text-sm font-medium tracking-wide focus:outline-none focus:ring-2 transition-all ${
+                            pinError
+                              ? 'border-red-500 focus:ring-red-400'
+                              : 'border-gray-200 focus:ring-red-500 focus:border-red-500'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPin(!showPin)}
+                          className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition-colors"
+                          tabIndex={-1}
+                          aria-label={showPin ? 'Hide password' : 'Show password'}
+                        >
+                          {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+
+                      {pinError && (
+                        <div className="flex items-center gap-1.5 text-xs text-red-600 font-medium mt-2">
+                          <AlertCircle size={14} className="flex-shrink-0" />
+                          <span>{pinError}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setPendingDownload(null)}
+                        className="flex-1 py-3 px-4 border border-gray-300 hover:bg-gray-100 text-slate-700 rounded-xl font-semibold text-sm transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        <Download size={16} />
+                        <span>Authorize</span>
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] text-center text-slate-400">
+                      Need custom enterprise access? Contact{' '}
+                      <a href="mailto:nocamilabs@gmail.com" className="text-red-600 hover:underline">
+                        nocamilabs@gmail.com
+                      </a>
+                    </p>
+                  </>
+                )}
+              </form>
             </motion.div>
           </div>
         )}

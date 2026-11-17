@@ -11,7 +11,7 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-bold text-white mb-4">Contact</h3>
           <p>Email: nocamilabs@gmail.com</p>
-          <p>Phone: +91 4366353547</p>
+          <p>Phone: +91 9047012500</p>
           <a href="https://nocamilabs.duckdns.org"><p>Web: https://nocamilabs.duckdns.org</p></a>
         </div>
         
