@@ -15,7 +15,8 @@ import {
   EyeOff,
   ShieldCheck,
   AlertCircle,
-  KeyRound
+  KeyRound,
+  ExternalLink
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
@@ -27,6 +28,7 @@ const projectsData = [
     icon: Boxes,
     category: 'Cyber-Physical Systems & AI',
     badge: 'Featured',
+    liveUrl: import.meta.env.VITE_TWINFLOW_LIVE_URL || 'https://pk-blush.vercel.app',
     summary: 'An autonomous warehouse 3D digital twin and predictive congestion engine. It leverages dynamic spatio-temporal deep learning to forecast bottlenecks and optimize AGV logistics in real time.',
     description: 'TwinFlow AI is a state-of-the-art enterprise Cyber-Physical System (CPS) designed for smart logistics and fulfillment centers. It unifies an interactive 3D WebGL spatial digital twin with real-time IoT/AGV fleet telemetry and a Dynamic Spatio-Temporal Graph Transformer (DSTGT v1.0) deep learning model to forecast warehouse aisle bottlenecks 15 minutes in advance with 92.4% accuracy.',
     features: [
@@ -40,8 +42,8 @@ const projectsData = [
     downloadFilename: 'TwinFlow-AI-Source.zip',
     downloadLabel: 'Download Full Project Source (.zip)',
     downloadSize: '44.4 MB',
-    pin: import.meta.env.VITE_PIN_TWINFLOW || '9240',
-    acceptedPins: ['9240', 'TF2026', 'twinflow'],
+    pin: import.meta.env.VITE_PIN_TWINFLOW || 'Amudha@5000',
+    acceptedPins: [import.meta.env.VITE_PIN_TWINFLOW || 'Amudha@5000'],
     additionalDownload: {
       url: '/TwinFlow_AI_Documentation.pdf',
       filename: 'TwinFlow_AI_Documentation.pdf',
@@ -358,22 +360,37 @@ Web: https://nocamilabs.duckdns.org
                   </div>
 
                   {/* Click to open popup & download prompt */}
-                  <div className="pt-4 border-t border-gray-200/80 flex items-center justify-between text-red-600 font-semibold group-hover:text-red-700">
+                  <div className="pt-4 border-t border-gray-200/80 flex flex-wrap items-center justify-between gap-3 text-red-600 font-semibold group-hover:text-red-700">
                     <span className="flex items-center gap-1.5 text-sm">
-                      View Details & Download
+                      View Details
                     </span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        requestDownloadAuthorization(project);
-                      }}
-                      className="flex items-center gap-1.5 text-sm bg-red-50 hover:bg-red-600 hover:text-white text-red-600 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
-                      title="Download Project"
-                    >
-                      <Lock size={14} className="text-red-500 hover:text-white" />
-                      <span>Download</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 text-xs bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer shadow-sm font-medium"
+                          title="Open Live Application"
+                        >
+                          <ExternalLink size={13} className="text-red-400" />
+                          <span>Live Demo</span>
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          requestDownloadAuthorization(project);
+                        }}
+                        className="flex items-center gap-1.5 text-sm bg-red-50 hover:bg-red-600 hover:text-white text-red-600 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                        title="Download Project"
+                      >
+                        <Lock size={14} className="text-red-500 hover:text-white" />
+                        <span>Download</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </FadeIn>
@@ -421,13 +438,26 @@ Web: https://nocamilabs.duckdns.org
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setSelectedProject(null)}
-                  className="text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition-colors"
-                  aria-label="Close popup"
-                >
-                  <X size={24} />
-                </button>
+                <div className="flex items-center gap-2">
+                  {selectedProject.liveUrl && (
+                    <a
+                      href={selectedProject.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm"
+                    >
+                      <ExternalLink size={13} />
+                      <span>Live Demo</span>
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setSelectedProject(null)}
+                    className="text-slate-400 hover:text-white p-2 rounded-full hover:bg-slate-800 transition-colors"
+                    aria-label="Close popup"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
               </div>
 
               {/* Modal Body */}
@@ -483,6 +513,18 @@ Web: https://nocamilabs.duckdns.org
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+                  {selectedProject.liveUrl && (
+                    <a
+                      href={selectedProject.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-colors font-semibold text-sm shadow-sm"
+                    >
+                      <ExternalLink size={16} className="text-red-400" />
+                      <span>Live Demo</span>
+                    </a>
+                  )}
+
                   {selectedProject.additionalDownload && (
                     <button
                       onClick={() =>
