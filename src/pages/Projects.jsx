@@ -21,6 +21,10 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
 
+/**
+ * Projects Showcase & Architecture Deep Dives
+ * Features interactive modal views, live demos, and PIN-secured project asset downloads.
+ */
 const projectsData = [
   {
     id: 'twinflow-ai',
